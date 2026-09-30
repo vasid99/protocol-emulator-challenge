@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-image="protocol-challenge-devenv:latest"
+image="ghcr.io/parthkalgaonkar/protocol-challenge-devenv:latest"
 proj_root=$(git rev-parse --show-toplevel)
 
 run_flags=""
