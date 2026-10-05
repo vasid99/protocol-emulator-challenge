@@ -85,10 +85,24 @@ class SimTime:
         print(f"Gather done at time = {sim_time.time}")
         sim_time.stop()
 
+    @classmethod
+    async def _unit_test_3(cls):
+        sim_time = cls()
+        t1 = asyncio.create_task(sim_time.start())
+        await asyncio.gather(
+            sim_time.wait_for(1),
+            sim_time.wait_for(2),
+            sim_time.wait_till(3),
+        )
+        print(f"Gather done at time = {sim_time.time}")
+        sim_time.stop()
+
 class Clock:
     def __init__(self,sim_time: SimTime):
         self.sim_time = sim_time
 
 if __name__ == '__main__':
     asyncio.run(SimTime._unit_test_2())
+    print()
+    asyncio.run(SimTime._unit_test_3())
 
