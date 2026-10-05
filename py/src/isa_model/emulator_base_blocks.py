@@ -25,7 +25,7 @@ class SimTime:
         self.stop()
         self.time = 0
 
-    async def tick(self,sleep_time = 0):
+    async def tick(self,sleep_time = 1e-3):
         await asyncio.sleep(sleep_time)
         self.time += self.time_step
 
@@ -79,9 +79,9 @@ class SimTime:
     async def _unit_test_2(cls):
         sim_time = cls()
         t1 = asyncio.create_task(sim_time.start())
-        await asyncio.gather(sim_time.wait_for(1))
-        await asyncio.gather(sim_time.wait_for(2))
-        await asyncio.gather(sim_time.wait_till(3))
+        await sim_time.wait_for(1)
+        await sim_time.wait_for(2)
+        await sim_time.wait_till(3)
         print(f"Gather done at time = {sim_time.time}")
         sim_time.stop()
 
@@ -89,11 +89,10 @@ class SimTime:
     async def _unit_test_3(cls):
         sim_time = cls()
         t1 = asyncio.create_task(sim_time.start())
-        await asyncio.gather(
-            sim_time.wait_for(1),
-            sim_time.wait_for(2),
-            sim_time.wait_till(3),
-        )
+        async with asyncio.TaskGroup() as tg:
+            tg.create_task(sim_time.wait_for(1))
+            tg.create_task(sim_time.wait_for(2))
+            tg.create_task(sim_time.wait_till(3))
         print(f"Gather done at time = {sim_time.time}")
         sim_time.stop()
 
