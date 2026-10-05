@@ -1,6 +1,8 @@
 import asyncio
 
-# reference: https://github.com/ianphil/pyRoute13/blob/master/docs/coroutine_simulation_tutorial.md
+# reference:
+# 1. simulator using asyncio: https://github.com/ianphil/pyRoute13/blob/master/docs/coroutine_simulation_tutorial.md
+# 2. from generators to asyncio: https://dev.indooroutdoor.io/asyncio-demystified-rebuilding-it-from-scratch-one-yield-at-a-time
 
 class SimTime:
     # allowed_time_steps = {
