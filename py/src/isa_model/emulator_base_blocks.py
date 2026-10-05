@@ -30,12 +30,37 @@ class SimTime:
     async def wait_for(self,t):
         t_curr = self.time
         while self.time < (t_curr+t):
-            pass
+            await asyncio.sleep(0)
 
     async def wait_till(self,t):
         while self.time < t:
-            pass
+            await asyncio.sleep(0)
+    
+    @classmethod
+    async def _unit_test_1(cls):
+        sim_time = cls()
+        async def coro1():
+            await sim_time.wait_for(1)
+            print("Wait for 1 done")
+            await sim_time.wait_for(2)
+            print("Wait for 2 done")
+            await sim_time.wait_till(6)
+            print("Wait till 6 done")
+        async def coro2():
+            print(f"time = {sim_time.time}")
+            for i in range(7):
+                await asyncio.sleep(sim_time.time_step)
+                sim_time.tick()
+                print(f"time = {sim_time.time}")
+        t1 = asyncio.create_task(coro1(),)
+        t2 = asyncio.create_task(coro2(),)
+        await t1
+        await t2
 
 class Clock:
     def __init__(self,sim_time: SimTime):
         self.sim_time = sim_time
+
+if __name__ == '__main__':
+    asyncio.run(SimTime._unit_test_1())
+
