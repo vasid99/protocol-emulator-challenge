@@ -49,7 +49,7 @@ class SimTime:
         async def coro2():
             print(f"time = {sim_time.time}")
             for i in range(7):
-                await asyncio.sleep(sim_time.time_step)
+                await asyncio.sleep(0)
                 sim_time.tick()
                 print(f"time = {sim_time.time}")
         t1 = asyncio.create_task(coro1(),)
