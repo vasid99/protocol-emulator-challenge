@@ -22,20 +22,34 @@ class SimTime:
         self.reset()
     
     def reset(self):
+        self.stop()
         self.time = 0
 
     async def tick(self,sleep_time = 0):
         await asyncio.sleep(sleep_time)
         self.time += self.time_step
 
+    async def start(self):
+        self.running = True
+        while self.running:
+            await self.tick()
+            print(f"Tick = {self.time}")
+    
+    def stop(self):
+        self.running = False
+
     async def wait_for(self,t):
+        print(f"Wait for {t} started")
         t_curr = self.time
         while self.time < (t_curr+t):
             await asyncio.sleep(0)
+        print(f"Wait for {t} done")
 
     async def wait_till(self,t):
+        print(f"Wait till {t} started")
         while self.time < t:
             await asyncio.sleep(0)
+        print(f"Wait till {t} done")
     
     @classmethod
     async def _unit_test_1(cls):
@@ -61,10 +75,20 @@ class SimTime:
         await t1
         await t2
 
+    @classmethod
+    async def _unit_test_2(cls):
+        sim_time = cls()
+        t1 = asyncio.create_task(sim_time.start())
+        await asyncio.gather(sim_time.wait_for(1))
+        await asyncio.gather(sim_time.wait_for(2))
+        await asyncio.gather(sim_time.wait_till(3))
+        print(f"Gather done at time = {sim_time.time}")
+        sim_time.stop()
+
 class Clock:
     def __init__(self,sim_time: SimTime):
         self.sim_time = sim_time
 
 if __name__ == '__main__':
-    asyncio.run(SimTime._unit_test_1())
+    asyncio.run(SimTime._unit_test_2())
 
