@@ -5,7 +5,7 @@ import random
 def test_shift_register():
     w = 8
     clk = BaseClock("clk",1)
-    sr = ShiftRegister(clock = clk, width = w)
+    sr = ShiftRegister(name = "I_shift_reg",clock = clk, width = w)
     sr_ref = [0]*w
     for i in range(100):
         b = random.randrange(1<<1)

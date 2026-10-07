@@ -34,10 +34,12 @@ class BaseOutput:
 class BaseBlock(ABC):
     def __init__(
         self,
+        name: str,
         inputs: dict[str,BaseInput],
         outputs: dict[str,BaseOutput],
         clocks: dict[str,BaseClock] = {},
     ):
+        self.name = name
         self.inputs = inputs
         self.outputs = outputs
         self.clocks = {}

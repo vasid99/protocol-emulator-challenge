@@ -6,8 +6,9 @@ from .base_block import (
 )
 
 class ShiftRegister(BaseBlock, clock_ports=["i_clk"]):
-    def __init__(self, clock: BaseClock, width: int):
+    def __init__(self, name: str, clock: BaseClock, width: int):
         super().__init__(
+            name = name,
             inputs = {
                 "i_bit": BaseInput("i_bit"),
             },

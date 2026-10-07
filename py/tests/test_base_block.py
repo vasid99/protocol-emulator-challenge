@@ -8,14 +8,15 @@ import pytest
 import random
 
 class Adder(BaseBlock):
-    def __init__(self, width: int):
+    def __init__(self, name: str, width: int):
         super().__init__(
-            {
+            name = name,
+            inputs = {
                 "a": BaseInput("aaaa"),
                 "b": BaseInput("bbbb"),
                 "cin": BaseInput("cincincincin"),
             },
-            {
+            outputs = {
                 "s": BaseOutput("ssss"),
                 "cout": BaseOutput("coutcoutcoutcout"),
             },
@@ -35,7 +36,7 @@ class Adder(BaseBlock):
 
 def test_adder():
     w = 4
-    add = Adder(width=w)
+    add = Adder("I_adder",width=w)
     for i in range(100):
         a = random.randrange(1<<w)
         b = random.randrange(1<<w)
@@ -51,7 +52,7 @@ def test_adder():
         assert add.cout.value == sum >> add.width & 0x1
 
 class Counter(BaseBlock,clock_ports = ["clk"]):
-    def __init__(self, width: int):
+    def __init__(self, name: str, width: int):
         inputs = {
             "reset": BaseInput("reset"),
         }
@@ -61,7 +62,12 @@ class Counter(BaseBlock,clock_ports = ["clk"]):
         clocks = {
             "clk": BaseClock("clk",1),
         }
-        super().__init__(inputs,outputs,clocks)
+        super().__init__(
+            name = name,
+            inputs = inputs,
+            outputs = outputs,
+            clocks = clocks,
+        )
         self.width = width
 
     def update_comb(self):
@@ -72,7 +78,7 @@ class Counter(BaseBlock,clock_ports = ["clk"]):
 
 def test_counter():
     w = 4
-    ctr = Counter(width=w)
+    ctr = Counter("I_ctr",width=w)
     ctr_val = 0
     
     for i in range(20):
