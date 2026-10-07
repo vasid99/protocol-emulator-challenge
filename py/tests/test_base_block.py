@@ -11,13 +11,13 @@ class Adder(BaseBlock):
     def __init__(self, width: int):
         super().__init__(
             {
-                "a": BaseInput("a"),
-                "b": BaseInput("b"),
-                "cin": BaseInput("cin"),
+                "a": BaseInput("aaaa"),
+                "b": BaseInput("bbbb"),
+                "cin": BaseInput("cincincincin"),
             },
             {
-                "s": BaseOutput("s"),
-                "cout": BaseOutput("c"),
+                "s": BaseOutput("ssss"),
+                "cout": BaseOutput("coutcoutcoutcout"),
             },
         )
         self.width = width
