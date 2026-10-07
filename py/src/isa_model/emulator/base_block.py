@@ -12,6 +12,14 @@ class BaseInput:
     def __init__(self, name: str):
         self.name = name
         self._value = 0
+        self.block = None
+
+    def _assign_block(self, block):
+        assert self.block is None,(
+            f"attempted to assign multiple blocks"
+            f" to input {self.name}"
+        )
+        self.block = block
 
     @partial(property,None)
     def value(self,val):
@@ -23,9 +31,9 @@ class BaseOutput:
         self._value = 0
         self.block = None
     
-    def _assign_driver_block(self, block):
+    def _assign_block(self, block):
         assert self.block is None,(
-            f"attempted to assign multiple drivers"
+            f"attempted to assign multiple blocks"
             f" to output {self.name}"
         )
         self.block = block
@@ -60,13 +68,14 @@ class BaseBlock(ABC):
                 f"got: {i.__class__.__name__}"
             )
             setattr(self,iname,i)
+            i._assign_block(self)
         for oname,o in outputs.items():
             assert isinstance(o,BaseOutput),(
                 f"expected BaseOutput datatype, "
                 f"got: {o.__class__.__name__}"
             )
             setattr(self,oname,o)
-            o._assign_driver_block(self)
+            o._assign_block(self)
         self._run_setattr_checks = True
 
     def __setattr__(self,name,value):
