@@ -6,7 +6,7 @@ from .base_block import (
     BaseClock,
 )
 
-class PortConn(nx.DiGraph):
+class KahnProcessGraph(nx.DiGraph):
     def _edge_ports_sanity_check(self, u_of_edge, v_of_edge):
         if u_of_edge.name not in self.nodes:
             assert isinstance(u_of_edge,BaseOutput),(
@@ -14,7 +14,11 @@ class PortConn(nx.DiGraph):
                 f"got {u_of_edge.__class__.__name__} "
                 f"({u_of_edge})"
             )
-            self.add_node(u_of_edge.name,outport=u_of_edge)
+            self.add_node(
+                u_of_edge.name,
+                outport=u_of_edge,
+                kpn_fifo=Queue(),
+            )
         else:
             outport = self.nodes[u_of_edge.name]["outport"]
             assert outport == u_of_edge,(
@@ -27,7 +31,11 @@ class PortConn(nx.DiGraph):
                 f"got {v_of_edge.__class__.__name__} "
                 f"({v_of_edge})"
             )
-            self.add_node(v_of_edge.name,inport=v_of_edge)
+            self.add_node(
+                v_of_edge.name,
+                inport=v_of_edge,
+                kpn_fifo=Queue(),
+            )
         else:
             inport = self.nodes[v_of_edge.name]["inport"]
             assert outport == v_of_edge,(
