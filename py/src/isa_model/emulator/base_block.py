@@ -3,12 +3,12 @@ from dataclasses import dataclass,field
 from abc import ABC,abstractmethod
 
 @dataclass
-class BaseClock:
+class BaseClockPort:
     name: str
     period: int
     start: int = 0
 
-class BaseInput:
+class BaseInputPort:
     def __init__(self, name: str):
         self.name = name
         self._value = 0
@@ -25,7 +25,7 @@ class BaseInput:
     def value(self,val):
         self._value = val
 
-class BaseOutput:
+class BaseOutputPort:
     def __init__(self, name: str):
         self.name = name
         self._value = 0
@@ -46,9 +46,9 @@ class BaseBlock(ABC):
     def __init__(
         self,
         name: str,
-        inputs: dict[str,BaseInput],
-        outputs: dict[str,BaseOutput],
-        clocks: dict[str,BaseClock] = {},
+        inputs: dict[str,BaseInputPort],
+        outputs: dict[str,BaseOutputPort],
+        clocks: dict[str,BaseClockPort] = {},
     ):
         self.name = name
         self.inputs = inputs
@@ -57,21 +57,21 @@ class BaseBlock(ABC):
         for cname in self._clock_ports:
             c = clocks[cname]
             self.clocks[cname] = c
-            assert isinstance(c,BaseClock),(
-                f"expected BaseClock datatype, "
+            assert isinstance(c,BaseClockPort),(
+                f"expected BaseClockPort datatype, "
                 f"got: {c.__class__.__name__}"
             )
             setattr(self,cname,c)
         for iname,i in inputs.items():
-            assert isinstance(i,BaseInput),(
-                f"expected BaseInput datatype, "
+            assert isinstance(i,BaseInputPort),(
+                f"expected BaseInputPort datatype, "
                 f"got: {i.__class__.__name__}"
             )
             setattr(self,iname,i)
             i._assign_block(self)
         for oname,o in outputs.items():
-            assert isinstance(o,BaseOutput),(
-                f"expected BaseOutput datatype, "
+            assert isinstance(o,BaseOutputPort),(
+                f"expected BaseOutputPort datatype, "
                 f"got: {o.__class__.__name__}"
             )
             setattr(self,oname,o)

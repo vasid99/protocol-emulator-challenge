@@ -1,7 +1,7 @@
 from src.isa_model.emulator.base_block import (
-    BaseClock,
-    BaseInput,
-    BaseOutput,
+    BaseClockPort,
+    BaseInputPort,
+    BaseOutputPort,
     BaseBlock,
 )
 import pytest
@@ -12,13 +12,13 @@ class Adder(BaseBlock):
         super().__init__(
             name = name,
             inputs = {
-                "a": BaseInput("aaaa"),
-                "b": BaseInput("bbbb"),
-                "cin": BaseInput("cincincincin"),
+                "a": BaseInputPort("aaaa"),
+                "b": BaseInputPort("bbbb"),
+                "cin": BaseInputPort("cincincincin"),
             },
             outputs = {
-                "s": BaseOutput("ssss"),
-                "cout": BaseOutput("coutcoutcoutcout"),
+                "s": BaseOutputPort("ssss"),
+                "cout": BaseOutputPort("coutcoutcoutcout"),
             },
         )
         self.width = width
@@ -54,13 +54,13 @@ def test_adder():
 class Counter(BaseBlock,clock_ports = ["clk"]):
     def __init__(self, name: str, width: int):
         inputs = {
-            "reset": BaseInput("reset"),
+            "reset": BaseInputPort("reset"),
         }
         outputs = {
-            "ctr": BaseOutput("ctr"),
+            "ctr": BaseOutputPort("ctr"),
         }
         clocks = {
-            "clk": BaseClock("clk",1),
+            "clk": BaseClockPort("clk",1),
         }
         super().__init__(
             name = name,

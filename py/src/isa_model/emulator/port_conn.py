@@ -1,16 +1,16 @@
 import networkx as nx
 from .base_block import (
     BaseBlock,
-    BaseInput,
-    BaseOutput,
-    BaseClock,
+    BaseInputPort,
+    BaseOutputPort,
+    BaseClockPort,
 )
 
 class KahnProcessGraph(nx.DiGraph):
     def _edge_ports_sanity_check(self, u_of_edge, v_of_edge):
         if u_of_edge.name not in self.nodes:
-            assert isinstance(u_of_edge,BaseOutput),(
-                f"expected BaseOutput as edge_from, "
+            assert isinstance(u_of_edge,BaseOutputPort),(
+                f"expected BaseOutputPort as edge_from, "
                 f"got {u_of_edge.__class__.__name__} "
                 f"({u_of_edge})"
             )
@@ -22,12 +22,13 @@ class KahnProcessGraph(nx.DiGraph):
         else:
             outport = self.nodes[u_of_edge.name]["outport"]
             assert outport == u_of_edge,(
-                f"attempted to assign new BaseOutput port to existing "
+                f"attempted to assign new BaseOutputPort port to existing "
                 f"port of same name {u_of_edge.name}"
             )
         if v_of_edge.name not in self.nodes:
-            assert isinstance(v_of_edge,BaseInput),(
-                f"expected BaseInput as edge_from, "
+            # TODO add BaseClockPort support
+            assert isinstance(v_of_edge,BaseInputPort),(
+                f"expected BaseInputPort as edge_from, "
                 f"got {v_of_edge.__class__.__name__} "
                 f"({v_of_edge})"
             )
@@ -39,13 +40,13 @@ class KahnProcessGraph(nx.DiGraph):
         else:
             inport = self.nodes[v_of_edge.name]["inport"]
             assert outport == v_of_edge,(
-                f"attempted to assign new BaseInput port to existing "
+                f"attempted to assign new BaseInputPort port to existing "
                 f"port of same name: {v_of_edge.name}"
             )
         inport_inedges = tuple(self.in_edges[v_of_edge.name])
         assert len(inport_inedges) == 0,(
-            f"attempted to assign multiple drivers to BaseInput "
-            f"{inport_inedges[0][1]}. Currently driven by BaseOutput "
+            f"attempted to assign multiple drivers to BaseInputPort "
+            f"{inport_inedges[0][1]}. Currently driven by BaseOutputPort "
             f"{inport_inedges[0][0]}."
         )
 

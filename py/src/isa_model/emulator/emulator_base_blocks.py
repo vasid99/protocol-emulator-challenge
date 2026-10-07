@@ -1,19 +1,19 @@
 from .base_block import (
     BaseBlock,
-    BaseInput,
-    BaseOutput,
-    BaseClock,
+    BaseInputPort,
+    BaseOutputPort,
+    BaseClockPort,
 )
 
 class ShiftRegister(BaseBlock, clock_ports=["i_clk"]):
-    def __init__(self, name: str, clock: BaseClock, width: int):
+    def __init__(self, name: str, clock: BaseClockPort, width: int):
         super().__init__(
             name = name,
             inputs = {
-                "i_bit": BaseInput("i_bit"),
+                "i_bit": BaseInputPort("i_bit"),
             },
             outputs = {
-                "o_reg": BaseOutput("o_reg"),
+                "o_reg": BaseOutputPort("o_reg"),
             },
             clocks = {
                 "i_clk": clock,

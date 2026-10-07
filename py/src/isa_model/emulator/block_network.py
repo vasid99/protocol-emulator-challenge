@@ -1,8 +1,8 @@
 from .base_block import (
     BaseBlock,
-    BaseInput,
-    BaseOutput,
-    BaseClock,
+    BaseInputPort,
+    BaseOutputPort,
+    BaseClockPort,
 )
 from .port_conn import (
     PortConn
