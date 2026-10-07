@@ -74,7 +74,10 @@ class Counter(BaseBlock,clock_ports = ["clk"]):
         pass
 
     def update_ff_clk(self):
-        self.ctr._value = 0 if self.reset._value else (self.ctr._value+1) & ((1<<self.width)-1)
+        self.ctr._value = (
+            0 if self.reset._value else 
+            (self.ctr._value+1) & ((1<<self.width)-1)
+        )
 
 def test_counter():
     w = 4

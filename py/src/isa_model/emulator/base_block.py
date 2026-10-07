@@ -24,7 +24,10 @@ class BaseOutput:
         self.block = None
     
     def _assign_driver_block(self, block):
-        assert self.block is None,f"attempted to assign multiple drivers to output {self.name}"
+        assert self.block is None,(
+            f"attempted to assign multiple drivers"
+            f" to output {self.name}"
+        )
         self.block = block
 
     @property
@@ -46,22 +49,37 @@ class BaseBlock(ABC):
         for cname in self._clock_ports:
             c = clocks[cname]
             self.clocks[cname] = c
-            assert isinstance(c,BaseClock),f"expected BaseClock datatype, got: {c.__class__.__name__}"
+            assert isinstance(c,BaseClock),(
+                f"expected BaseClock datatype, "
+                f"got: {c.__class__.__name__}"
+            )
             setattr(self,cname,c)
         for iname,i in inputs.items():
-            assert isinstance(i,BaseInput),f"expected BaseInput datatype, got: {i.__class__.__name__}"
+            assert isinstance(i,BaseInput),(
+                f"expected BaseInput datatype, "
+                f"got: {i.__class__.__name__}"
+            )
             setattr(self,iname,i)
         for oname,o in outputs.items():
-            assert isinstance(o,BaseOutput),f"expected BaseOutput datatype, got: {o.__class__.__name__}"
+            assert isinstance(o,BaseOutput),(
+                f"expected BaseOutput datatype, "
+                f"got: {o.__class__.__name__}"
+            )
             setattr(self,oname,o)
             o._assign_driver_block(self)
         self._run_setattr_checks = True
 
     def __setattr__(self,name,value):
         if getattr(self,"_run_setattr_checks",None) is True:
-            assert name not in self.inputs,f"cannot set input {name}, try setting {name}.value."
-            assert name not in self.outputs,f"cannot set output {name}."
-            assert name not in self.clocks,f"cannot set clock {name}."
+            assert name not in self.inputs,(
+                f"cannot set input {name}, try setting {name}.value."
+            )
+            assert name not in self.outputs,(
+                f"cannot set output {name}."
+            )
+            assert name not in self.clocks,(
+                f"cannot set clock {name}."
+            )
         super().__setattr__(name,value)
 
     @abstractmethod
