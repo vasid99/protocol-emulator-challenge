@@ -7,7 +7,7 @@ from .base_block import (
     BaseClockSignal,
 )
 
-class KahnProcessGraph(nx.DiGraph):
+class PortConnGraph(nx.DiGraph):
     allowed_edge_types = {
         "clk": (BaseClockSignal,BaseClockPort),
         "wire": (BaseOutputPort,BaseInputPort),

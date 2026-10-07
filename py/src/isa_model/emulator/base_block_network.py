@@ -1,3 +1,4 @@
+from abc import ABC,abstractmethod
 from .base_block import (
     BaseBlock,
     BaseInputPort,
@@ -6,14 +7,19 @@ from .base_block import (
     BaseClockSignal,
 )
 from .port_conn import (
-    PortConn
+    PortConnGraph,
 )
 
-class BlockNetwork:
+class BaseBlockNetwork(ABC):
     def __init__(
         self,
         blocks: list[BaseBlock],
-        port_conn: PortConn,
+        port_conn: PortConnGraph,
     ):
         self.blocks = blocks
         self.port_conn = port_conn
+    
+    @abstractmethod
+    @classmethod
+    def generate(cls):
+        raise NotImplementedError
