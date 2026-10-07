@@ -6,6 +6,7 @@ from .base_block import (
     BaseClockPort,
     BaseClockSignal,
 )
+from queue import Queue
 
 class PortConnGraph(nx.DiGraph):
     allowed_edge_types = {

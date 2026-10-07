@@ -19,7 +19,7 @@ class BaseBlockNetwork(ABC):
         self.blocks = blocks
         self.port_conn = port_conn
     
-    @abstractmethod
     @classmethod
+    @abstractmethod
     def generate(cls):
         raise NotImplementedError
