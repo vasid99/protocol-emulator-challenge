@@ -9,7 +9,6 @@ import random
 
 class Adder(BaseBlock):
     def __init__(self, width: int):
-        self.width = width
         super().__init__(
             {
                 "a": BaseInput("a"),
@@ -21,6 +20,7 @@ class Adder(BaseBlock):
                 "cout": BaseOutput("c"),
             },
         )
+        self.width = width
 
     def update_comb(self):
         s = 0
@@ -30,8 +30,8 @@ class Adder(BaseBlock):
             b_i = ((self.b._value >> i) & 0x1)
             s |= (a_i ^ b_i ^ c_i) << i
             c_i = (a_i & b_i) | (b_i & c_i) | (c_i & a_i)
-        self.s = s
-        self.cout = c_i
+        self.s._value = s
+        self.cout._value = c_i
 
 def test_adder():
     w = 4
@@ -47,13 +47,11 @@ def test_adder():
         add.cin.value = cin
         add.update_comb()
 
-        assert add.s == sum & ((1 << add.width) - 1)
-        assert add.cout == sum >> add.width & 0x1
+        assert add.s.value == sum & ((1 << add.width) - 1)
+        assert add.cout.value == sum >> add.width & 0x1
 
 class Counter(BaseBlock,clock_ports = ["clk"]):
     def __init__(self, width: int):
-        self.width = width
-
         inputs = {
             "reset": BaseInput("reset"),
         }
@@ -64,7 +62,8 @@ class Counter(BaseBlock,clock_ports = ["clk"]):
             "clk": BaseClock("clk",1),
         }
         super().__init__(inputs,outputs,clocks)
-    
+        self.width = width
+
     def update_comb(self):
         pass
 

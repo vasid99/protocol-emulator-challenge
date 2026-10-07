@@ -33,8 +33,12 @@ class BaseBlock(ABC):
         outputs: dict[str,BaseOutput],
         clocks: dict[str,BaseClock] = {},
     ):
+        self.inputs = inputs
+        self.outputs = outputs
+        self.clocks = {}
         for cname in self._clock_ports:
             c = clocks[cname]
+            self.clocks[cname] = c
             assert isinstance(c,BaseClock),f"expected BaseClock datatype, got: {c.__class__.__name__}"
             setattr(self,cname,c)
         for iname,i in inputs.items():
@@ -43,6 +47,14 @@ class BaseBlock(ABC):
         for oname,o in outputs.items():
             assert isinstance(o,BaseOutput),f"expected BaseOutput datatype, got: {o.__class__.__name__}"
             setattr(self,oname,o)
+        self._run_setattr_checks = True
+
+    def __setattr__(self,name,value):
+        if getattr(self,"_run_setattr_checks",None) is True:
+            assert name not in self.inputs,f"cannot set input {name}, try setting {name}.value."
+            assert name not in self.outputs,f"cannot set output {name}."
+            assert name not in self.clocks,f"cannot set clock {name}."
+        super().__setattr__(name,value)
 
     @abstractmethod
     def update_comb(self):
