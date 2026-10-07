@@ -1,5 +1,5 @@
 from src.isa_model.emulator.base_block import BaseClockSignal
-from src.isa_model.emulator.emulator_base_blocks import ShiftRegister
+from src.isa_model.emulator.emulator_blocks import ShiftRegister
 import random
 
 def test_shift_register():
