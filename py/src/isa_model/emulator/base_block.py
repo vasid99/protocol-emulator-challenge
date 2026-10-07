@@ -21,6 +21,11 @@ class BaseOutput:
     def __init__(self, name: str):
         self.name = name
         self._value = 0
+        self.block = None
+    
+    def _assign_driver_block(self, block):
+        assert self.block is None,f"attempted to assign multiple drivers to output {self.name}"
+        self.block = block
 
     @property
     def value(self):
@@ -47,6 +52,7 @@ class BaseBlock(ABC):
         for oname,o in outputs.items():
             assert isinstance(o,BaseOutput),f"expected BaseOutput datatype, got: {o.__class__.__name__}"
             setattr(self,oname,o)
+            o._assign_driver_block(self)
         self._run_setattr_checks = True
 
     def __setattr__(self,name,value):
