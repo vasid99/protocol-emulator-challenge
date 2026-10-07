@@ -1,10 +1,10 @@
-from src.isa_model.emulator.base_block import BaseClockPort
+from src.isa_model.emulator.base_block import BaseClockSignal
 from src.isa_model.emulator.emulator_base_blocks import ShiftRegister
 import random
 
 def test_shift_register():
     w = 8
-    clk = BaseClockPort("clk",1)
+    clk = BaseClockSignal("clk",1)
     sr = ShiftRegister(name = "I_shift_reg",clock = clk, width = w)
     sr_ref = [0]*w
     for i in range(100):

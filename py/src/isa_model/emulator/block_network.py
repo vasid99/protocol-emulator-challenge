@@ -3,6 +3,7 @@ from .base_block import (
     BaseInputPort,
     BaseOutputPort,
     BaseClockPort,
+    BaseClockSignal,
 )
 from .port_conn import (
     PortConn

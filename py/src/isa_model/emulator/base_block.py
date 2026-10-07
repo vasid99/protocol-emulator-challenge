@@ -3,10 +3,15 @@ from dataclasses import dataclass,field
 from abc import ABC,abstractmethod
 
 @dataclass
-class BaseClockPort:
+class BaseClockSignal:
     name: str
     period: int
     start: int = 0
+
+@dataclass
+class BaseClockPort:
+    name: str
+    sig: BaseClockSignal
 
 class BaseInputPort:
     def __init__(self, name: str):
@@ -46,30 +51,31 @@ class BaseBlock(ABC):
     def __init__(
         self,
         name: str,
-        inputs: dict[str,BaseInputPort],
-        outputs: dict[str,BaseOutputPort],
-        clocks: dict[str,BaseClockPort] = {},
+        inputs: list[BaseInputPort],
+        outputs: list[BaseOutputPort],
+        clocks: list[BaseClockPort] = {},
     ):
         self.name = name
-        self.inputs = inputs
-        self.outputs = outputs
+        self.inputs = {i.name:i for i in inputs}
+        self.outputs = {o.name:o for o in outputs}
+        clocks_d = {c.name:c for c in clocks}
         self.clocks = {}
         for cname in self._clock_ports:
-            c = clocks[cname]
+            c = clocks_d[cname]
             self.clocks[cname] = c
             assert isinstance(c,BaseClockPort),(
                 f"expected BaseClockPort datatype, "
                 f"got: {c.__class__.__name__}"
             )
             setattr(self,cname,c)
-        for iname,i in inputs.items():
+        for iname,i in self.inputs.items():
             assert isinstance(i,BaseInputPort),(
                 f"expected BaseInputPort datatype, "
                 f"got: {i.__class__.__name__}"
             )
             setattr(self,iname,i)
             i._assign_block(self)
-        for oname,o in outputs.items():
+        for oname,o in self.outputs.items():
             assert isinstance(o,BaseOutputPort),(
                 f"expected BaseOutputPort datatype, "
                 f"got: {o.__class__.__name__}"

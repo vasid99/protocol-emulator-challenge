@@ -3,6 +3,7 @@ from src.isa_model.emulator.base_block import (
     BaseInputPort,
     BaseOutputPort,
     BaseBlock,
+    BaseClockSignal,
 )
 import pytest
 import random
@@ -11,15 +12,15 @@ class Adder(BaseBlock):
     def __init__(self, name: str, width: int):
         super().__init__(
             name = name,
-            inputs = {
-                "a": BaseInputPort("aaaa"),
-                "b": BaseInputPort("bbbb"),
-                "cin": BaseInputPort("cincincincin"),
-            },
-            outputs = {
-                "s": BaseOutputPort("ssss"),
-                "cout": BaseOutputPort("coutcoutcoutcout"),
-            },
+            inputs = [
+                BaseInputPort("a"),
+                BaseInputPort("b"),
+                BaseInputPort("cin"),
+            ],
+            outputs = [
+                BaseOutputPort("s"),
+                BaseOutputPort("cout"),
+            ],
         )
         self.width = width
 
@@ -52,16 +53,21 @@ def test_adder():
         assert add.cout.value == sum >> add.width & 0x1
 
 class Counter(BaseBlock,clock_ports = ["clk"]):
-    def __init__(self, name: str, width: int):
-        inputs = {
-            "reset": BaseInputPort("reset"),
-        }
-        outputs = {
-            "ctr": BaseOutputPort("ctr"),
-        }
-        clocks = {
-            "clk": BaseClockPort("clk",1),
-        }
+    def __init__(
+        self,
+        name: str,
+        width: int,
+        clock: BaseClockSignal,
+    ):
+        inputs = [
+            BaseInputPort("reset"),
+        ]
+        outputs = [
+            BaseOutputPort("ctr"),
+        ]
+        clocks = [
+            BaseClockPort("clk",clock),
+        ]
         super().__init__(
             name = name,
             inputs = inputs,
@@ -81,7 +87,7 @@ class Counter(BaseBlock,clock_ports = ["clk"]):
 
 def test_counter():
     w = 4
-    ctr = Counter("I_ctr",width=w)
+    ctr = Counter("I_ctr",width=w,clock=BaseClockSignal("clk",1))
     ctr_val = 0
     
     for i in range(20):

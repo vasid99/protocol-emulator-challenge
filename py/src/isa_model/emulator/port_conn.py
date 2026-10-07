@@ -4,16 +4,31 @@ from .base_block import (
     BaseInputPort,
     BaseOutputPort,
     BaseClockPort,
+    BaseClockSignal,
 )
 
 class KahnProcessGraph(nx.DiGraph):
+    allowed_edge_types = {
+        "clk": (BaseClockSignal,BaseClockPort),
+        "wire": (BaseOutputPort,BaseInputPort),
+    }
     def _edge_ports_sanity_check(self, u_of_edge, v_of_edge):
-        if u_of_edge.name not in self.nodes:
-            assert isinstance(u_of_edge,BaseOutputPort),(
-                f"expected BaseOutputPort as edge_from, "
-                f"got {u_of_edge.__class__.__name__} "
-                f"({u_of_edge})"
+        edge_types = (
+            type(u_of_edge),
+            type(v_of_edge),
+        )
+        edge_type_key = None
+        for ek,ev in self.allowed_edge_types.items():
+            if edge_types == ev:
+                edge_type_key = ek
+                break
+        else:
+            raise TypeError(
+                f"expected edge types as "
+                f"one of {self.allowed_edge_types}, "
+                f"found {edge_types}."
             )
+        if u_of_edge.name not in self.nodes:
             self.add_node(
                 u_of_edge.name,
                 outport=u_of_edge,
@@ -22,16 +37,11 @@ class KahnProcessGraph(nx.DiGraph):
         else:
             outport = self.nodes[u_of_edge.name]["outport"]
             assert outport == u_of_edge,(
-                f"attempted to assign new BaseOutputPort port to existing "
-                f"port of same name {u_of_edge.name}"
+                f"attempted to assign new {type(u_of_edge).__name__} "
+                f"port to existing port of same name {u_of_edge.name}"
             )
         if v_of_edge.name not in self.nodes:
             # TODO add BaseClockPort support
-            assert isinstance(v_of_edge,BaseInputPort),(
-                f"expected BaseInputPort as edge_from, "
-                f"got {v_of_edge.__class__.__name__} "
-                f"({v_of_edge})"
-            )
             self.add_node(
                 v_of_edge.name,
                 inport=v_of_edge,
@@ -39,16 +49,22 @@ class KahnProcessGraph(nx.DiGraph):
             )
         else:
             inport = self.nodes[v_of_edge.name]["inport"]
-            assert outport == v_of_edge,(
-                f"attempted to assign new BaseInputPort port to existing "
-                f"port of same name: {v_of_edge.name}"
+            assert inport == v_of_edge,(
+                f"attempted to assign new {type(v_of_edge).__name__} "
+                f"port to existing port of same name {v_of_edge.name}"
             )
-        inport_inedges = tuple(self.in_edges[v_of_edge.name])
-        assert len(inport_inedges) == 0,(
-            f"attempted to assign multiple drivers to BaseInputPort "
-            f"{inport_inedges[0][1]}. Currently driven by BaseOutputPort "
-            f"{inport_inedges[0][0]}."
-        )
+
+            # multiple driver check
+            inport_inedges = tuple(self.in_edges[v_of_edge.name])
+            assert len(inport_inedges) == 0,(
+                f"attempted to assign multiple drivers to "
+                f"{type(v_of_edge).__name__} port: "
+                f"{inport_inedges[0][1]}."
+
+                f"\nCurrently driven by "
+                f"{type(u_of_edge).__name__} port: "
+                f"{inport_inedges[0][0]}."
+            )
 
     def add_edge(self, u_of_edge, v_of_edge, **attr):
         self._edge_ports_sanity_check(u_of_edge, v_of_edge)
