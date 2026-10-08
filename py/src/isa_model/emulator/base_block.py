@@ -106,9 +106,9 @@ class BaseBlock(ABC):
             )
         super().__setattr__(name,value)
 
-    @abstractmethod
-    def update_comb(self):
-        raise NotImplementedError
+    @property
+    def is_combinational(self):
+        return hasattr(self,"update_comb")
 
     def __init_subclass__(
         cls,
@@ -119,9 +119,13 @@ class BaseBlock(ABC):
         cls._clock_ports = clock_ports
 
         @abstractmethod
-        def update_ff_abstract(self):
+        def update_abstract(self):
             raise NotImplementedError
         
-        for clk in clock_ports:
-            if getattr(cls,f"update_ff_{clk}",None) is None:
-                setattr(cls,f"update_ff_{clk}",update_ff_abstract)
+        if len(clock_ports):
+            for clk in clock_ports:
+                if getattr(cls,f"update_ff_{clk}",None) is None:
+                    setattr(cls,f"update_ff_{clk}",update_abstract)
+        else:
+            if getattr(cls,f"update_comb",None) is None:
+                setattr(cls,f"update_comb",update_abstract)
