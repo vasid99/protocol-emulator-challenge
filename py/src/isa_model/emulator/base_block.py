@@ -30,6 +30,10 @@ class BasePort:
         )
         self._block = value
 
+    @property
+    def qname(self):
+        return f"{self.block.name}.{self.name}"
+
 class BaseClockPort(BasePort):
     def __init__(self,
         name: str,
